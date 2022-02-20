@@ -9,4 +9,13 @@ client.on("connect", function() {
         client.publish("kazi", "temperature value: " + random.toString());
 
     }, 5000);
+
+
+    setInterval(function() {
+        var random = Math.random() * 10;
+
+        console.log("Total sell " + random);
+        client.publish("totalSell", "temperature value: " + random.toString());
+
+    }, 2000);
 });
