@@ -15,7 +15,7 @@ client.on("connect", function() {
         var random = Math.random() * 10;
 
         console.log("Total sell " + random);
-        client.publish("totalSell", "temperature value: " + random.toString());
+        client.publish("totalSell", "" + random.toString());
 
     }, 2000);
 });
