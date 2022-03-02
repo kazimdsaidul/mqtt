@@ -1,14 +1,44 @@
 const mqtt = require("mqtt");
-var client = mqtt.connect("mqtt://broker.hivemq.com");
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://kazi:mZRKcnXaKYTOkIwn@cluster0.8fgss.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const clientMongo = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
 
-client.on("connect", function() {
-    client.subscribe("kazi");
-    client.subscribe("totalSell");
-    console.log("Client has subcribed successfully");
+
+
+clientMongo.connect(err => {
+    if (err) {
+        console.log("connection fail");
+    } else {
+        console.log("connect to mongodb!");
+        connectToMQtt();
+    }
 });
 
-client.on('message', function(topic, message) {
-    console.log("topic:-" + topic.toString() + "message:-" + message.toString());
-});
+function connectToMQtt() {
+    var client = mqtt.connect("mqtt://broker.hivemq.com");
+    client.on("connect", function() {
+        // client.subscribe("kazi");
+        // client.subscribe("totalSell");
+        client.subscribe("topic_location");
+        console.log("Client has subcribed successfully");
+    });
+
+    client.on('message', function(topic, message) {
+        console.log("topic:-" + topic.toString() + " message:-" + message.toString());
+        insertData(clientMongo, message)
+    });
+
+    function insertData(clientMongo, message) {
+        var myDatabase = clientMongo.db('locations-db');
+        var myCollection = myDatabase.collection('location');
+        myCollection.insertOne(message, function(error) {
+            if (error) {
+                console.log("Data insert fail");
+            } else {
+                console.log("data insert successfully!!!");
+            }
+        })
+    }
+}
