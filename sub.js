@@ -31,10 +31,11 @@ function connectToMQtt() {
     });
 
     function insertData(clientMongo, message) {
-        var myDatabase = clientMongo.db('locations-db');
+        var myDatabase = clientMongo.db('location-db');
         var myCollection = myDatabase.collection('location');
-        myCollection.insertOne(message, function(error) {
+        myCollection.insertOne(JSON.parse(message), function(error) {
             if (error) {
+                console.log(error);
                 console.log("Data insert fail");
             } else {
                 console.log("data insert successfully!!!");
